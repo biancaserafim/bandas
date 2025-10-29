@@ -3,8 +3,6 @@ namespace CadastroBandas
 {
     class Program
     {
-        const string NOME_ARQUIVO = "bandas.txt";
-
         static void addBanda(List<Banda> listaBandas)
         {
             Banda novaBanda = new Banda();
@@ -18,6 +16,7 @@ namespace CadastroBandas
             novaBanda.ranking = int.Parse(Console.ReadLine());
             listaBandas.Add(novaBanda);
             Console.WriteLine("--------");
+
         }
 
         static void mostrarBandas(List<Banda> listaBandas)
@@ -29,6 +28,25 @@ namespace CadastroBandas
                 Console.WriteLine($"{b.nome} - {b.genero} - {b.integrantes} - {b.ranking}");
                 posicao++;
             }
+
+        }
+        static bool buscarBanda(List<Banda> listaBandas, string nomeBusca)
+        {
+            foreach (Banda b in listaBandas)
+            {
+                if (b.nome.ToUpper().Equals(nomeBusca.ToUpper()))
+                {
+                    Console.WriteLine("*** Dados da banda ***");
+                    Console.WriteLine($"Nome: {b.nome}");
+                    Console.WriteLine($"Genero: {b.genero}");
+                    Console.WriteLine($"Integrantes: {b.integrantes}");
+                    Console.WriteLine($"Ranking: {b.ranking}");
+                    return true;
+                }
+
+            }// fim foreach
+            return false;
+
         }
         static int menu()
         {
@@ -43,7 +61,8 @@ namespace CadastroBandas
 
         static void salvarDados(List<Banda> listaBandas, string nomeArquivo)
         {
-            using (System.IO.StreamWriter writer = new System.IO.StreamWriter(nomeArquivo))
+
+            using (StreamWriter writer = new StreamWriter(nomeArquivo))
             {
                 foreach (Banda b in listaBandas)
                 {
@@ -51,13 +70,15 @@ namespace CadastroBandas
                 }
             }
             Console.WriteLine("Dados salvos com sucesso!");
+
+
         }
 
         static void carregarDados(List<Banda> listaBandas, string nomeArquivo)
         {
-            if (System.IO.File.Exists(nomeArquivo))
+            if (File.Exists(nomeArquivo))
             {
-                string[] linhas = System.IO.File.ReadAllLines(nomeArquivo);
+                string[] linhas = File.ReadAllLines(nomeArquivo);
                 foreach (string linha in linhas)
                 {
                     string[] campos = linha.Split(',');
@@ -72,18 +93,15 @@ namespace CadastroBandas
             }
             else
                 Console.WriteLine("Arquivo não encontrado :(");
+
         }
 
+        
         static void Main()
         {
             List<Banda> listaBandas = new List<Banda>();
-            
-            carregarDados(listaBandas, NOME_ARQUIVO);
-            Console.WriteLine("Pressione qualquer tecla para continuar...");
-            Console.ReadKey();
-            Console.Clear();
-            
             int opcao = 0;
+            carregarDados(listaBandas, "bandas.txt");
             do
             {
                 opcao = menu();
@@ -95,14 +113,25 @@ namespace CadastroBandas
                     case 2:
                         mostrarBandas(listaBandas);
                         break;
+                       
+                    case 3: Console.Write("Nome da banda:");
+                        string nomeBanda = Console.ReadLine();
+                        bool encontrado = buscarBanda(listaBandas, nomeBanda);
+                        if (!encontrado)
+                            Console.WriteLine("Banda não encontrada :(" );
+                        break;
+                        
                     case 0:
-                        salvarDados(listaBandas, NOME_ARQUIVO);
+                        salvarDados(listaBandas, "bandas.txt");
                         Console.WriteLine("Até mais ;)");
                         break;
                 }
-                Console.ReadKey();
-                Console.Clear(); 
+                Console.ReadKey();// pausa
+                Console.Clear(); // limpa a tela
             } while (opcao != 0);
+
         }
+
     }
+
 }
